@@ -1,26 +1,60 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import ClienteLista from './components/ClienteLista';
+import ClienteForm from './components/ClienteForm';
 import './App.css';
 
-function App() {
+const App: React.FC = () => {
+  const [view, setView] = useState<'list' | 'form'>('list');
+  const [clienteEditandoId, setClienteEditandoId] = useState<number | null>(null);
+  const [listaAtualizada, setListaAtualizada] = useState<number>(0); 
+  const handleNovoCliente = () => {
+    setClienteEditandoId(null);
+    setView('form');
+  };
+
+  const handleEditarCliente = (id: number) => {
+    setClienteEditandoId(id);
+    setView('form');
+  };
+
+  const handleVoltar = () => {
+    setView('list');
+    setClienteEditandoId(null);
+    setListaAtualizada(prev => prev + 1); 
+  };
+
+  const handleAtualizarLista = () => {
+    setListaAtualizada(prev => prev + 1);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+      <header>
+        <h1>Sistema de Gerenciamento de Clientes</h1>
       </header>
+
+      {view === 'form' ? (
+        <div>
+          <ClienteForm 
+            clienteId={clienteEditandoId || undefined} 
+            onSuccess={handleVoltar}
+            onCancel={handleVoltar}
+          />
+        </div>
+      ) : (
+        <div>
+          <div className="header-actions">
+            <button onClick={handleNovoCliente}>+ Novo Cliente</button>
+          </div>
+          <ClienteLista 
+            onEditarCliente={handleEditarCliente}
+            onAtualizarLista={handleAtualizarLista}
+            key={listaAtualizada} 
+          />
+        </div>
+      )}
     </div>
   );
-}
+};
 
 export default App;
